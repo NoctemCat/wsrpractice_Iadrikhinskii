@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">wsr_Iadrikhinskii</string>
+    <string name="logo">WorldSkills Bank</string>
+    <string name="banks">Отделения и банкоматы</string>
+    <string name="money">Курсы валют</string>
+    <string name="button">ВОЙТИ</string>
+    <string name="cur_usd">USD</string>
+    <string name="cur_eur">EUR</string>
+</resources>
