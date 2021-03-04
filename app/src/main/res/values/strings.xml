@@ -6,4 +6,9 @@
     <string name="button">ВОЙТИ</string>
     <string name="cur_usd">USD</string>
     <string name="cur_eur">EUR</string>
+    <!-- Strings related to login -->
+    <string name="autorization">Авторизация</string>
+    <string name="prompt_login">Логин</string>
+    <string name="prompt_password">Пароль</string>
+
 </resources>
