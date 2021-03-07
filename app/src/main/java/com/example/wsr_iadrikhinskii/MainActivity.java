@@ -1,23 +1,16 @@
 package com.example.wsr_iadrikhinskii;
 
-import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
-import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.text.InputType;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -26,7 +19,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -34,6 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
+    ValCurs valutes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,63 +37,110 @@ public class MainActivity extends AppCompatActivity {
         final TextView usd_textView = (TextView)findViewById(R.id.text_curusd);
         final TextView eur_textView = (TextView)findViewById(R.id.text_cureur);
 
-
-        Date todayDate = Calendar.getInstance().getTime();
+        Calendar cal = Calendar.getInstance();
+        Date todayDate = cal.getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String todayString = formatter.format(todayDate);
 
-        CurrencyAPI api = CurrencyAPI.retrofit.create(CurrencyAPI.class);
-/*
-        final Call<ValCurs> call = api.getValutes(todayString);
+        valutes = null;
+        try {
+            valutes = (ValCurs) InternalStorage.readObject(getApplicationContext(),"VALUTES");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        call.enqueue(new Callback<ValCurs>() {
-            @Override
-            public void onResponse(Call<ValCurs> call, Response<ValCurs> response) {
-                if (response.isSuccessful()) {
-                    ValCurs valutes = response.body();
+        if(valutes != null){
+            SimpleDateFormat formatterData = new SimpleDateFormat("dd.MM.yyyy");
+            cal.add(Calendar.DATE, -1);
+            String yesterdayString = formatterData.format(cal.getTime());
 
-                    date_textView.setText(valutes.getDate());
-                    for(Valute val:valutes.getValutes()){
-                        if(val.getCharCode().equals("USD")){
-                            usd_textView.setText(val.getPrice());
+            if(!yesterdayString.equals(valutes.getDate())){
+                InternalStorage.deleteFiles(getApplicationContext());
+                Log.i("cross", "Files deleted, cause the date in the cache is different");
+                valutes = null;
+            }
+        }
+
+        if(valutes == null){
+            CurrencyAPI api = CurrencyAPI.retrofit.create(CurrencyAPI.class);
+            final Call<ValCurs> call = api.getValutes(todayString);
+
+            call.enqueue(new Callback<ValCurs>() {
+                @Override
+                public void onResponse(Call<ValCurs> call, Response<ValCurs> response) {
+                    if (response.isSuccessful()) {
+                        Log.i("cross","Downloaded information");
+                        FrameLayout lay = (FrameLayout)findViewById(R.id.frame_currency);
+                        lay.setClickable(true);
+                        valutes = response.body();
+
+                        try {
+                            InternalStorage.writeObject(getApplicationContext(), "VALUTES", valutes);
+                            Log.i("cross","Wrote to cache");
                         }
-                        if(val.getCharCode().equals("EUR")){
-                            eur_textView.setText(val.getPrice());
+                        catch (IOException e) {
+                            Log.e("Err", e.getMessage());
+                        }
+
+                        date_textView.setText(valutes.getDate());
+                        for(Valute val:valutes.getValutes()){
+                            if(val.getCharCode().equals("USD")){
+                                usd_textView.setText(val.getPrice());
+                            }
+                            if(val.getCharCode().equals("EUR")){
+                                eur_textView.setText(val.getPrice());
+                            }
                         }
                     }
-                }
-                else{
-                    int statusCode = response.code();
+                    else{
+                        int statusCode = response.code();
 
-                    ResponseBody errorBody = response.errorBody();
-                    try {
-                        date_textView.setText(errorBody.string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        ResponseBody errorBody = response.errorBody();
+                        try {
+                            date_textView.setText(errorBody.string());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                     }
+                }
 
+                @Override
+                public void onFailure(Call<ValCurs> call, Throwable t) {
+                    date_textView.setText("Что-то пошло не так: " + t.getMessage());
+                }
+            });
+        }
+        else {
+            Log.i("cross","Got from cache");
+            FrameLayout lay = (FrameLayout)findViewById(R.id.frame_currency);
+            lay.setClickable(true);
+            date_textView.setText(valutes.getDate());
+            for(Valute val:valutes.getValutes()){
+                if(val.getCharCode().equals("USD")){
+                    usd_textView.setText(val.getPrice());
+                }
+                if(val.getCharCode().equals("EUR")){
+                    eur_textView.setText(val.getPrice());
                 }
             }
-
-            @Override
-            public void onFailure(Call<ValCurs> call, Throwable t) {
-                date_textView.setText("Что-то пошло не так: " + t.getMessage());
-            }
-        });
-*/
+        }
     }
 
     public void click_ATM(View view){
-        Intent intent = new Intent(this, bankomats.class);
-        startActivity(intent);
+
     }
 
     public void click_Currency(View view){
-
+        Intent intent = new Intent(this, Currencies.class);
+        startActivity(intent);
     }
 
     public void click_autorization(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar_MinWidth);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this,
+                android.R.style.Theme_DeviceDefault_Dialog_NoActionBar_MinWidth);
         builder.setTitle("Авторизация");
         builder.setCancelable(false);
 
@@ -140,10 +180,10 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(layout);
 
         builder.setNegativeButton("Отмена", (dialog, which) -> {
-            Log.v("cross", "fail " + login.getText() + " " + pass.getText());
+            Log.i("cross", "fail " + login.getText() + " " + pass.getText());
         });
         builder.setPositiveButton("Войти", (dialog, which) -> {
-            Log.v("cross", "pass " + login.getText() + " " + pass.getText());
+            Log.i("cross", "pass " + login.getText() + " " + pass.getText());
         });
 
         //builder.setView(but.getView());

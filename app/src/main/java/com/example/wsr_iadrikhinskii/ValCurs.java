@@ -1,17 +1,22 @@
 package com.example.wsr_iadrikhinskii;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-@Root
-public class ValCurs {
+@Root(name = "ValCurs")
+public class ValCurs implements Serializable {
     @Attribute(name = "Date")
     private String date;
 
-    @Attribute
+    @Attribute(name = "name")
     private String name;
 
     @ElementList(inline=true)

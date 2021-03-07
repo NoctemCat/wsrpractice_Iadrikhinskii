@@ -1,14 +1,18 @@
 package com.example.wsr_iadrikhinskii;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 @Root(name="Valute")
-public class Valute {
+public class Valute implements Serializable {
     @Attribute(name="ID")
     private String id;
-
     @Element(name = "NumCode")
     private int numCode;
     @Element(name = "CharCode")
@@ -67,6 +71,4 @@ public class Valute {
     public void setPrice(String price) {
         this.price = price;
     }
-
-
 }
