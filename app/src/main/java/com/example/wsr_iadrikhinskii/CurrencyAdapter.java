@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,6 +44,15 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHo
         DecimalFormat df = new DecimalFormat("#.####");
         holder.textbuy.setText(df.format(price));
         holder.textsell.setText(df.format(price));
+
+        int id = mContext.getResources().getIdentifier(("f_" + valute.getCharCode().toLowerCase()),
+                "drawable", mContext.getPackageName());
+        if(id != 0){
+            holder.imageView.setImageResource(id);
+        }
+        else{
+            holder.imageView.setImageResource(R.drawable.empty);
+        }
     }
 
     @Override
@@ -58,6 +68,7 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHo
         TextView textCharCode;
         TextView textbuy;
         TextView textsell;
+        ImageView imageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +76,7 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHo
             textCharCode = (TextView)itemView.findViewById(R.id.charCode);
             textbuy = (TextView)itemView.findViewById(R.id.textbuy);
             textsell = (TextView)itemView.findViewById(R.id.textsell);
+            imageView = (ImageView)itemView.findViewById(R.id.itemImageView);
         }
     }
 }
