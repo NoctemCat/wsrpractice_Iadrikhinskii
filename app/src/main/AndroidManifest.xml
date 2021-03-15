@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.wsr_iadrikhinskii">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -10,21 +11,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wsr_Iadrikhinskii_NoActionBar">
-
         <activity
-            android:name=".Currencies"
-            android:theme="@style/Theme.Wsr_Iadrikhinskii_ActionBar"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Wsr_Iadrikhinskii_NoActionBar"></activity>
+        <activity
+            android:name=".BankomatsActivity"
             android:label="@string/title_activity_currency"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".LoginActivity"
+            android:theme="@style/Theme.Wsr_Iadrikhinskii_ActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".LoginActivity" />
         </activity>
-
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".CurrenciesActivity"
+            android:label="@string/title_activity_currency"
+            android:parentActivityName=".LoginActivity"
+            android:theme="@style/Theme.Wsr_Iadrikhinskii_ActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LoginActivity" />
+        </activity>
+        <activity
+            android:name=".LoginActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

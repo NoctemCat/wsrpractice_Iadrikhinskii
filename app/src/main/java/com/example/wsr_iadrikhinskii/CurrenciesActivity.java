@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 
-public class Currencies extends AppCompatActivity {
+public class CurrenciesActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     List<Valute> mValutes;
     @Override
