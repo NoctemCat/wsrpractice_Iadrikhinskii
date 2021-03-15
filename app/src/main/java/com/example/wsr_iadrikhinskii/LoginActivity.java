@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -129,7 +130,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void click_ATM(View view){
-
+        Intent intent = new Intent(this, BankomatsActivity.class);
+        startActivity(intent);
     }
 
     public void click_Currency(View view){
@@ -187,8 +189,13 @@ public class LoginActivity extends AppCompatActivity {
 
             Log.i("cross", "pass " + llogin + " " + ppass);
 
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            if( llogin.equals("admin") && ppass.equals("admin")){
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
+            else{
+                Toast.makeText(getApplicationContext(),"Wrong login or password", Toast.LENGTH_SHORT).show();
+            }
         });
 
         //builder.setView(but.getView());
